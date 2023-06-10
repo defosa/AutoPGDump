@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bdbackup
+  labels:
+    name: bdbackup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bdbackup
+  template:
+    metadata:
+      labels:
+        app: bdbackup
+    spec:
+      containers:
+      - name: bdbackup
+        image: defosa/imagename:0.01 # your image !!
+        envFrom:
+          - secretRef:
+             name: env-bdbackup
+        ports:
+        - containerPort: 8080
+        command: ["./app"]
+        volumeMounts:
+        - name: test-pv
+          mountPath: /app/s3backet 
+      volumes:
+        - name: test-pv
+          persistentVolumeClaim:
+            claimName: csi-s3-pvc-bdbackup                                               
+      restartPolicy: Always
